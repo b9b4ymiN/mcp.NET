@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch MCP Server",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/Mcp.SqlApiServer/bin/Debug/net8.0/Mcp.SqlApiServer.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Mcp.SqlApiServer",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Launch MCP Server (with test input)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/Mcp.SqlApiServer/bin/Debug/net8.0/Mcp.SqlApiServer.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Mcp.SqlApiServer",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "pipeTransport": {
+        "pipeProgram": "bash",
+        "pipeArgs": ["-c"],
+        "pipeCwd": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ]
+}
