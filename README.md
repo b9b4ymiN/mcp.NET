@@ -600,6 +600,70 @@ Check HttpTool:AllowedHosts in MCP server configuration
 }
 ```
 
+## Testing and Monitoring
+
+### HTTP Mode for Testing
+
+The server supports dual transport modes:
+- **Stdio mode** (default): For production use with MCP clients
+- **HTTP mode**: For testing, debugging, and monitoring
+
+**Start in HTTP mode:**
+```bash
+# Using command line argument
+dotnet run --project src/Mcp.SqlApiServer http
+
+# Or using environment variable
+export MCP_TRANSPORT_MODE=http
+dotnet run --project src/Mcp.SqlApiServer
+```
+
+**Available endpoints:**
+- `GET  /tools` - List all available tools (JSON)
+- `GET  /health` - Health check
+- `POST /mcp` - MCP Inspector compatible endpoint (JSON-RPC 2.0)
+- `POST /tools/{name}` - Execute specific tool
+
+**Quick test:**
+```bash
+# List all tools
+curl http://localhost:5000/tools
+
+# Execute http.call tool
+curl -X POST http://localhost:5000/tools/http.call \
+  -H "Content-Type: application/json" \
+  -d '{"method":"GET","url":"https://api.github.com/users/octocat"}'
+
+# Execute sql.query tool
+curl -X POST http://localhost:5000/tools/sql.query \
+  -H "Content-Type: application/json" \
+  -d '{"sql":"SELECT @@VERSION AS SqlVersion"}'
+```
+
+### Using MCP Inspector
+
+[MCP Inspector](https://github.com/modelcontextprotocol/inspector) is a visual debugging tool for MCP servers.
+
+**Method 1: HTTP Connection (Recommended)**
+```bash
+# 1. Start server in HTTP mode
+dotnet run --project src/Mcp.SqlApiServer http
+
+# 2. Open https://inspector.modelcontextprotocol.io
+# 3. Select "HTTP Transport"
+# 4. Enter: http://localhost:5000/mcp
+# 5. Click "Connect"
+```
+
+**Method 2: Stdio Connection**
+```bash
+npx @modelcontextprotocol/inspector dotnet run --project src/Mcp.SqlApiServer
+```
+
+**See [MCP_INSPECTOR.md](./MCP_INSPECTOR.md) for detailed testing guide.**
+
+---
+
 ## Development
 
 ### Run Tests
