@@ -23,6 +23,7 @@ A production-ready **Model Context Protocol (MCP)** server implementation in C#/
 - [Integration](#integration)
   - [Claude Desktop](#claude-desktop-integration)
   - [Mini-AGI Backend](#mini-agi-backend-integration)
+  - [IIS Deployment (Windows Server)](#iis-deployment)
 - [Configuration](#configuration)
 - [API Reference](#api-reference)
 - [Security](#security)
@@ -928,6 +929,66 @@ See complete integration guide in the [README - Mini-AGI Integration Section](#u
 3. Register tools in mini-AGI tool registry
 4. Configure environment variables
 5. Start mini-AGI backend
+
+### IIS Deployment
+
+Deploy the MCP server to Internet Information Services (IIS) on Windows Server for enterprise hosting.
+
+**Why IIS?**
+- Enterprise-grade hosting with load balancing
+- Windows Authentication integration
+- Centralized management via IIS Manager
+- Auto-restart and health monitoring
+- SSL/HTTPS termination
+
+**Prerequisites:**
+- Windows Server 2016+ (or Windows 10/11 Pro)
+- IIS 10.0+ with ASP.NET Core Module
+- .NET 8 Runtime (Hosting Bundle)
+
+**Quick Start:**
+```powershell
+# 1. Publish application
+dotnet publish src/Mcp.SqlApiServer -c Release -o C:\Publish\McpServer
+
+# 2. Copy to IIS directory
+Copy-Item C:\Publish\McpServer C:\inetpub\wwwroot\McpServer -Recurse
+
+# 3. Create application pool and website
+Import-Module WebAdministration
+New-WebAppPool -Name "McpServerPool"
+New-Website -Name "McpServer" -ApplicationPool "McpServerPool" -PhysicalPath "C:\inetpub\wwwroot\McpServer" -Port 5000
+
+# 4. Configure environment
+[Environment]::SetEnvironmentVariable("MCP_TRANSPORT_MODE", "http", "Machine")
+[Environment]::SetEnvironmentVariable("Sql__ConnectionString", "Server=localhost;...", "Machine")
+
+# 5. Start website
+Start-Website -Name "McpServer"
+
+# 6. Test
+Invoke-WebRequest http://localhost:5000/health
+```
+
+**Complete Guide:**
+
+For detailed step-by-step IIS deployment instructions, see **[IIS_DEPLOYMENT.md](./IIS_DEPLOYMENT.md)** which covers:
+
+- ✅ Prerequisites and Windows features installation
+- ✅ Publishing and transferring application files
+- ✅ Application pool configuration and optimization
+- ✅ Website creation and binding setup
+- ✅ Environment variables and security configuration
+- ✅ SSL/HTTPS certificate installation
+- ✅ Firewall and SQL Server access setup
+- ✅ Performance tuning and caching
+- ✅ Monitoring and logging setup
+- ✅ Comprehensive troubleshooting guide
+
+**Access URLs after deployment:**
+- Health check: `http://your-server:5000/health`
+- Tools list: `http://your-server:5000/tools`
+- MCP endpoint: `http://your-server:5000/mcp`
 
 ---
 
